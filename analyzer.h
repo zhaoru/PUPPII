@@ -9,7 +9,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TString.h>
-#include <TGraph.h>
+#include <TGraphErrors.h>
 
 #include "reader.h"
 
@@ -66,12 +66,14 @@ class analyzer {
 		TH1F * h_SoftDropMass;
 		TH1F * h_TrimmedMass;
 		TH1F *h_pt_resolution_muti[10][10];
-		TGraph *TG_pt_mean[10];
-		TGraph *TG_pt_rms[10];
+		TGraphErrors *TG_pt_mean[10];
+		TGraphErrors *TG_pt_rms[10];
+ TGraphErrors *TG_eta_mean[10];
+                TGraphErrors *TG_eta_rms[10];
 		char *histname = new char[100];
 		char *histname_1 = new char[100];
 		char *histname_2 = new char[100];
-		const double pt_bins[7] = {0, 30, 50, 75, 100, 200,2000};
+		const double pt_bins[7] = {0, 30, 50, 75, 100, 200,250};
 		const double eta_bins[6] = {0, 1.3, 2, 2.5, 3, 5};
 };
 

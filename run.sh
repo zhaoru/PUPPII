@@ -9,7 +9,8 @@
 source /etc/profile.d/eos_aliases.sh      # In case of LPC
 
 # Input file directory. 
-indir=/store/user/satoshi/PUPPI80xTuning/QCD
+#indir=/store/user/satoshi/PUPPI80xTuning/QCD
+indir=/store/user/satoshi/PUPPI76xTuning/QCD
 
 # Prefix of output root file. 
 prefixoutputrootfile="QCD"
@@ -20,7 +21,7 @@ outputdir_relativepath=output
 executable=main
 
 # Number of maximum input files
-NMAXFILES=1
+NMAXFILES=1000
 
 #--------------------------
 #----- Setting end --------
@@ -49,11 +50,11 @@ done
 # Preparation of input files is done
 #---------
 
-for algo in AK8  
-#for algo in AK8 CA10 AK4 
+#for algo in AK8  
+for algo in AK8 CA10 AK4 
 do
-#for pu in PF PFSK PFCHS PFPUPPI
-for pu in PF 
+for pu in PF PFSK PFCHS PFPUPPI
+#for pu in PF 
 do
 
 TDirectory=${algo}${pu}

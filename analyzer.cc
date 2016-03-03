@@ -28,7 +28,8 @@ void analyzer::do_analyses(){
 
 	auto mean = new double[10][10]();
 	auto rms = new double[10][10]();
-
+	auto mean_err = new double[10][10]();
+	auto rms_err = new double[10][10]();
 	init();
 
 	const std::string JESRecalibrationLevel = ( PUMitigation == "PFPUPPI" ) ? "Uncorrected" : "L3Absolute" ;
@@ -91,8 +92,8 @@ void analyzer::do_analyses(){
 						}
 					}
 				}
-				if (pt>pt_bins[bins-1]) {
 					for (Int_t i=0; i<bins-1; i++) {
+				if (pt>pt_bins[bins-1] && fabs(eta)>eta_bins[i] && fabs(eta)<eta_bins[i+1]) {
 						FillHistogram( h_pt_resolution_muti[bins-1][i] , ( pt - pt_gen ) / pt_gen , 1.0 );
 					}
 				}
@@ -109,11 +110,18 @@ void analyzer::do_analyses(){
 
 				mean[i][j] = h_pt_resolution_muti[i][j]->GetMean();
 				rms[i][j] = h_pt_resolution_muti[i][j]->GetRMS();
-
-
-				TG_pt_mean[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, mean[i][j]);
-				TG_pt_rms[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, rms[i][j]);
-			}
+				mean_err[i][j] = h_pt_resolution_muti[i][j]->GetMeanError();
+				rms_err[i][j] = h_pt_resolution_muti[i][j]->GetRMSError();
+				TG_eta_mean[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, mean[i][j]);
+				TG_eta_rms[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, rms[i][j]);
+                                TG_eta_mean[i]->SetPointError(j,0,mean_err[i][j]);                                
+                                TG_eta_rms[i]->SetPointError(j,0,rms_err[i][j]);
+                                
+                                TG_pt_mean[j]->SetPoint(i,(pt_bins[i]+pt_bins[i+1])/2, mean[i][j]);
+                                TG_pt_rms[j]->SetPoint(i,(pt_bins[i]+pt_bins[i+1])/2, rms[i][j]);
+                                TG_pt_mean[j]->SetPointError(i,0,mean_err[i][j]);
+                                TG_pt_rms[j]->SetPointError(i,0,rms_err[i][j]);		
+	}
 		}
 
 		postProcess();
@@ -134,7 +142,7 @@ void analyzer::do_analyses(){
 
 		h_nJet =new TH1F("nJet","nJet",50,0,50);
 		h_pt =new TH1F("PT","PT",100,0,1000);
-		h_pt_resolution =new TH1F("PTresolution","PTresolution",200,-2,2);
+		h_pt_resolution =new TH1F("PTresolution","PTresolution",200,-4,10);
 
 		h_tau21 = new TH1F("tau21","tau21",100,0,1);
 		h_tau32 = new TH1F("tau32","tau32",100,0,1);
@@ -147,19 +155,37 @@ void analyzer::do_analyses(){
 		for (Int_t i=0; i<bins; i++) {
 			for (Int_t j=0; j<bins-1; j++) {
 				sprintf(histname, "PTresolution_pt_%.2f_%.2f_eta_%.2f_%.2f",pt_bins[i],pt_bins[i+1],eta_bins[j]*10,eta_bins[j+1]*10);
-				h_pt_resolution_muti[i][j]=new TH1F(histname,histname,200,-2,2);
+				h_pt_resolution_muti[i][j]=new TH1F(histname,histname,200,-4,10);
 			}
 		}
 		for (Int_t i=0; i<bins; i++) {
 			sprintf(histname_1, "PTres_mean_pt_%.2f_%.2f",pt_bins[i],pt_bins[i+1]);
-			TG_pt_mean[i] = new TGraph(bins-1);
-			TG_pt_mean[i]->SetName(histname_1);
-			TG_pt_mean[i]->SetTitle(histname_1);
+			TG_eta_mean[i] = new TGraphErrors(bins-1);
+			TG_eta_mean[i]->SetName(histname_1);
+			TG_eta_mean[i]->SetTitle(histname_1);
+                        TG_eta_mean[i]->SetMarkerStyle(24);
+                        TG_eta_mean[i]->SetMarkerSize(0.5);
 			sprintf(histname_2, "PTres_rms_pt_%.2f_%.2f",pt_bins[i],pt_bins[i+1]);
-			TG_pt_rms[i] = new TGraph(bins-1);
-			TG_pt_rms[i]->SetName(histname_2);
-			TG_pt_rms[i]->SetTitle(histname_2);
-		}
+			TG_eta_rms[i] = new TGraphErrors(bins-1);
+			TG_eta_rms[i]->SetName(histname_2);
+			TG_eta_rms[i]->SetTitle(histname_2);
+                        TG_eta_rms[i]->SetMarkerStyle(24);
+                        TG_eta_rms[i]->SetMarkerSize(0.5);		
+}
+                for (Int_t i=0; i<bins-1; i++) {
+                        sprintf(histname_1, "PTres_mean_eta_%.2f_%.2f",eta_bins[i],eta_bins[i+1]);
+                        TG_pt_mean[i] = new TGraphErrors(bins-1);
+                        TG_pt_mean[i]->SetName(histname_1);
+                        TG_pt_mean[i]->SetTitle(histname_1);
+                        TG_pt_mean[i]->SetMarkerStyle(24);
+                        TG_pt_mean[i]->SetMarkerSize(0.5);
+                        sprintf(histname_2, "PTres_rms_pt_%.2f_%.2f",eta_bins[i],eta_bins[i+1]);
+                        TG_pt_rms[i] = new TGraphErrors(bins-1);
+                        TG_pt_rms[i]->SetName(histname_2);
+                        TG_pt_rms[i]->SetTitle(histname_2);
+                        TG_pt_rms[i]->SetMarkerStyle(24);
+                        TG_pt_rms[i]->SetMarkerSize(0.5);
+}
 	}
 
 	void analyzer::FillHistogram( TH1F * h , double val , double weight ){
@@ -195,14 +221,6 @@ void analyzer::do_analyses(){
 		h -> Fill( val_x ,  val_y, weight ) ;
 	}
 
-	//void analyzer::GetMeanRMS( TH1F * h , double mean , double rms ){
-	//	mean = h->GetMean();
-	//	rms = h->GetRMS();
-	//}
-	//void analyzer::FillTGraph(TGraph * g, double x[100] , double y1[100], double y2[100]){
-	//	TG_pt_mean = new TGraph(6,x, y1);
-	//	TG_pt_rms = new TGraph(6,x, y2);
-	//}
 
 
 	void analyzer::_PreparePileupReweightingBasedonTruthPileup( ){
@@ -264,7 +282,8 @@ void analyzer::do_analyses(){
 	void analyzer::postProcess(){
 		main_directory -> mkdir("variables");
 		main_directory -> mkdir("pTresolution");
-		main_directory -> mkdir("TGraph_pTres");
+		main_directory -> mkdir("TGraph_pTres_eta");
+		main_directory -> mkdir("TGraph_pTres_pt");
 		main_directory -> cd("variables");
 
 		// writing histograms, etc...
@@ -288,11 +307,16 @@ void analyzer::do_analyses(){
 			}
 		}
 
-		main_directory -> cd("TGraph_pTres");  		
+		main_directory -> cd("TGraph_pTres_eta");  		
 		for (Int_t i=0; i<bins; i++) {
-			TG_pt_mean[i]->Write();
-			TG_pt_rms[i]->Write();
+			TG_eta_mean[i]->Write();
+			TG_eta_rms[i]->Write();
 		}
+                main_directory -> cd("TGraph_pTres_pt");
+                for (Int_t i=0; i<bins-1; i++) {
+                        TG_pt_mean[i]->Write();
+                        TG_pt_rms[i]->Write();
+                }
 
 		f_out -> Close();
 
