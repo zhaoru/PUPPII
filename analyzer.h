@@ -42,8 +42,6 @@ class analyzer {
 		void init();
 		void postProcess();
 		void FillHistogram( TH1F * h , double val , double weight );
-		//void GetMeanRMS( TH1F * h , double mean , double rms );
-		//void FillTGraph(double x[100] , double y1[100],double y2[100] );
 		void FillHistogram2D( TH2F * h , double val_x , double val_y,  double weight );
 		void _PreparePileupReweightingBasedonTruthPileup( );
 
@@ -75,8 +73,6 @@ class analyzer {
 		char *histname_2 = new char[100];
 		const double pt_bins[7] = {0, 30, 50, 75, 100, 200,2000};
 		const double eta_bins[6] = {0, 1.3, 2, 2.5, 3, 5};
-		//const double mean[10][10];
-		//const double rms[10][10];
 };
 
 #endif
