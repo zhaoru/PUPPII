@@ -45,8 +45,8 @@ void analyzer::do_analyses(){
 
 		const long NENTRIES = t->GetEntries();
 
-				for (Long64_t jEntry=0; jEntry < NENTRIES ; jEntry ++ )
-		//for (Long64_t jEntry=0; jEntry < 100 ; jEntry ++ )
+		for (Long64_t jEntry=0; jEntry < NENTRIES ; jEntry ++ )
+			//for (Long64_t jEntry=0; jEntry < 100 ; jEntry ++ )
 		{
 
 			{ // Prepare event information
@@ -57,7 +57,7 @@ void analyzer::do_analyses(){
 
 			FillHistogram( h_nJet ,  r.p4_ , 1.0 );
 			for( int iJet = 0 ; iJet < r.p4_ ; iJet ++ ){
-			//for( int iJet = 0 ; iJet < 1 ; iJet ++ ){
+				//for( int iJet = 0 ; iJet < 1 ; iJet ++ ){
 
 				const double pt = r.p4_fCoordinates_fPt[iJet] * r.jec_factors->at(iJet)[ JESRecalibrationLevel ] ;
 				const double eta = r.p4_fCoordinates_fEta[iJet] * r.jec_factors->at(iJet)[ JESRecalibrationLevel ] ;
@@ -101,7 +101,7 @@ void analyzer::do_analyses(){
 
 			// - - - - ANALYSES END - - - - - - - -
 
-		} // Events-loop ends
+			} // Events-loop ends
 
 		} // file loop ends.
 		for (Int_t i=0; i<bins; i++) {
@@ -110,11 +110,11 @@ void analyzer::do_analyses(){
 				mean[i][j] = h_pt_resolution_muti[i][j]->GetMean();
 				rms[i][j] = h_pt_resolution_muti[i][j]->GetRMS();
 
-			
-			TG_pt_mean[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, mean[i][j]);
-			TG_pt_rms[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, rms[i][j]);
+
+				TG_pt_mean[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, mean[i][j]);
+				TG_pt_rms[i]->SetPoint(j,(eta_bins[j]+eta_bins[j+1])/2, rms[i][j]);
+			}
 		}
-}
 
 		postProcess();
 	}
@@ -150,16 +150,16 @@ void analyzer::do_analyses(){
 				h_pt_resolution_muti[i][j]=new TH1F(histname,histname,200,-2,2);
 			}
 		}
-for (Int_t i=0; i<bins; i++) {
-sprintf(histname_1, "PTres_mean_pt_%.2f_%.2f",pt_bins[i],pt_bins[i+1]);
-TG_pt_mean[i] = new TGraph(bins-1);
-TG_pt_mean[i]->SetName(histname_1);
-TG_pt_mean[i]->SetTitle(histname_1);
-sprintf(histname_2, "PTres_rms_pt_%.2f_%.2f",pt_bins[i],pt_bins[i+1]);
-TG_pt_rms[i] = new TGraph(bins-1);
-TG_pt_rms[i]->SetName(histname_2);
-TG_pt_rms[i]->SetTitle(histname_2);
-}
+		for (Int_t i=0; i<bins; i++) {
+			sprintf(histname_1, "PTres_mean_pt_%.2f_%.2f",pt_bins[i],pt_bins[i+1]);
+			TG_pt_mean[i] = new TGraph(bins-1);
+			TG_pt_mean[i]->SetName(histname_1);
+			TG_pt_mean[i]->SetTitle(histname_1);
+			sprintf(histname_2, "PTres_rms_pt_%.2f_%.2f",pt_bins[i],pt_bins[i+1]);
+			TG_pt_rms[i] = new TGraph(bins-1);
+			TG_pt_rms[i]->SetName(histname_2);
+			TG_pt_rms[i]->SetTitle(histname_2);
+		}
 	}
 
 	void analyzer::FillHistogram( TH1F * h , double val , double weight ){
@@ -262,7 +262,6 @@ TG_pt_rms[i]->SetTitle(histname_2);
 	}
 
 	void analyzer::postProcess(){
-		std::cout<<"zhaoru5"<<std::endl;
 		main_directory -> mkdir("variables");
 		main_directory -> mkdir("pTresolution");
 		main_directory -> mkdir("TGraph_pTres");
@@ -281,7 +280,6 @@ TG_pt_rms[i]->SetTitle(histname_2);
 		h_FilteredMass->Write();
 		h_SoftDropMass->Write();
 		h_TrimmedMass ->Write();
-		std::cout<<"zhaoru3"<<std::endl;
 		main_directory -> cd("pTresolution");	
 		const int bins = 6;
 		for (Int_t i=0; i<bins; i++) {
@@ -290,7 +288,6 @@ TG_pt_rms[i]->SetTitle(histname_2);
 			}
 		}
 
-		std::cout<<"zhaoru4"<<std::endl;
 		main_directory -> cd("TGraph_pTres");  		
 		for (Int_t i=0; i<bins; i++) {
 			TG_pt_mean[i]->Write();
